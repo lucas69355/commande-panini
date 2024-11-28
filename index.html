@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commande de Panini</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .form-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        button.loading {
+            position: relative;
+            pointer-events: none;
+        }
+
+        button.loading .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #fff;
+            border-top-color: #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        #messageErreur {
+            display: none;
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Commande de Panini</h2>
+        <form id="paniniForm">
+            <label for="prenom">Prénom :</label>
+            <input type="text" id="prenom" name="prenom" required placeholder="Prénom">
+
+            <label for="chambre">Numéro de Chambre :</label>
+            <input type="text" id="chambre" name="chambre" required placeholder="batiment et numero de chambre ex: R405">
+
+            <label for="telephone">Numéro de téléphone :</label>
+            <input type="text" id="telephone" name="telephone" required placeholder="ex: 06********">
+
+            <label for="tarif">Choisissez votre formule :</label>
+            <select id="tarif" name="tarif" required>
+                <option value="Formule Kinder Bueno Nutella - 2,50€">Formule Kinder Bueno Nutella - 2,50€</option>
+                <option value="Formule Nutella - 1,50€">Formule Nutella - 1,50€</option>
+            </select>
+
+            <button type="button" onclick="envoyerCommande()">Soumettre la commande
+                <span class="loading-spinner"></span>
+            </button>
+        </form>
+
+        <div id="messageErreur"></div>
+    </div>
+
+    <script>
+        function envoyerCommande() {
+            // Masquer l'ancien message d'erreur
+            const messageErreur = document.getElementById("messageErreur");
+            messageErreur.style.display = "none";
+
+            // Vérifier si la commande peut être effectuée
+            if (!verifierJours()) {
+                afficherMessageErreur("Commande possible uniquement du lundi au jeudi.");
+                return;
+            }
+
+            if (!verifierHoraires()) {
+                afficherMessageErreur("Commande possible uniquement entre 20h00 et 21h45.");
+                return;
+            }
+
+            // Récupération des valeurs du formulaire
+            const prenom = document.getElementById("prenom").value.trim();
+            const chambre = document.getElementById("chambre").value.trim();
+            const telephone = document.getElementById("telephone").value.trim();
+            const tarif = document.getElementById("tarif").value;
+            const email = "belinlucas0@gmail.com";
+
+            // Validation des champs
+            if (!prenom || !chambre || !telephone) {
+                afficherMessageErreur("Tous les champs doivent être remplis.");
+                return;
+            }
+
+            const chambreRegex = /^(R|N)\d+$/;
+            if (!chambreRegex.test(chambre)) {
+                afficherMessageErreur("Numéro de chambre invalide. Utilisez 'R' ou 'N' suivi de chiffres.");
+                return;
+            }
+
+            const telephoneRegex = /^[0-9]{10}$/;
+            if (!telephoneRegex.test(telephone)) {
+                afficherMessageErreur("Numéro de téléphone invalide");
+                return;
+            }
+
+            // Préparer l'email
+            const subject = "Commande Panini";
+            const body = Prénom : ${prenom}\nChambre : ${chambre}\nTéléphone : ${telephone}\nFormule : ${tarif};
+            const button = document.querySelector("button");
+            button.classList.add("loading");
+
+            // Simuler l'envoi d'un email avec redirection
+            setTimeout(() => {
+                window.location.href = mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)};
+                button.classList.remove("loading");
+
+                const chambresSpecifiques = ["R401", "R402", "R403", "R404", "R405", "R406", "R407", "R408", "R409", "R410", "R411", "R412"];
+                const redirection = chambresSpecifiques.includes(chambre) ? "confirmation.html" : "confirmation2.html";
+                setTimeout(() => {
+                    window.location.href = redirection;
+                }, 2000);
+            }, 1000);
+        }
+
+        function afficherMessageErreur(message) {
+            const messageErreur = document.getElementById("messageErreur");
+            messageErreur.textContent = message;
+            messageErreur.style.display = "block";
+        }
+
+        function verifierJours() {
+            const jour = new Date().getDay();
+            return [1, 2, 3, 4].includes(jour);
+        }
+
+        function verifierHoraires() {
+            const now = new Date();
+            const heures = now.getHours();
+            const minutes = now.getMinutes();
+            const heureEnMinutes = heures * 60 + minutes;
+            return heureEnMinutes >= 1200 && heureEnMinutes <= 1305; // 20h00 à 21h45
+        }
+    </script>
+</body>
+</html>
